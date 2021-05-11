@@ -135,38 +135,46 @@ app.post("/signup", async(req, res) => {
 app.post("/login", async(req, res) => {
     const Dbuser = users.find(({ email }) => email === req.body.email);
 
-    const hashedPassword = crypto
-        .pbkdf2Sync(req.body.password, Dbuser.salt, 10000, 256, "sha512")
-        .toString("base64");
+    if (Dbuser) {
+        const hashedPassword = crypto
+            .pbkdf2Sync(req.body.password, Dbuser.salt, 10000, 256, "sha512")
+            .toString("base64");
 
-    if (hashedPassword === Dbuser.hash) {
-        const _payload = {
-            email: Dbuser.email,
-            id: Dbuser.id,
-            image: Dbuser.image,
+        if (hashedPassword === Dbuser.hash) {
+            const _payload = {
+                email: Dbuser.email,
+                id: Dbuser.id,
+                image: Dbuser.image,
 
-            firstName: Dbuser.firstName,
-            lastName: user.lastName,
-        };
-        const token = jsonwebtoken.sign(
-            _payload,
-            "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING", { expiresIn: "1d" }
-        );
+                firstName: Dbuser.firstName,
+                lastName: Dbuser.lastName,
+            };
+            const token = jsonwebtoken.sign(
+                _payload,
+                "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING", { expiresIn: "1d" }
+            );
 
-        Dbuser.token = token;
+            Dbuser.token = token;
 
-        res.send({
-            sucess: false,
-            status: "failed",
-            message: "sucess",
-            token: token,
-            user: _payload,
-        });
+            res.send({
+                sucess: false,
+                status: "failed",
+                message: "sucess",
+                token: token,
+                user: _payload,
+            });
+        } else {
+            res.send({
+                sucess: false,
+                status: "failed",
+                message: "incorrect password",
+            });
+        }
     } else {
         res.send({
             sucess: false,
             status: "failed",
-            message: "incorrect password",
+            message: "user not found",
         });
     }
 });
