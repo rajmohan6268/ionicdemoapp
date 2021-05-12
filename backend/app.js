@@ -191,7 +191,71 @@ app.post("/login", async(req, res) => {
     }
 });
 
-// app.use(auth);
+app.get("/recover", async(req, res) => {
+    console.log(req.query.email, "email");
+    const Dbuser = users.find(({ email }) => email === req.query.email);
+
+    if (Dbuser) {
+        var token = (Dbuser.resetPasswordToken = crypto
+            .randomBytes(60)
+            .toString("hex"));
+        Dbuser.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+
+        res.send({
+            sucess: true,
+            status: "ok",
+            message: "sucess",
+            passwordResetToken: token,
+        });
+    } else {
+        res.json({
+            sucess: false,
+            status: "failed",
+            message: "user not found",
+        });
+    }
+});
+
+app.post("/resetpassword", async(req, res) => {
+    console.log(req.body);
+
+    var d = Date.now();
+    console.log(d);
+    const Dbuser = users.find(({ email }) => email === req.body.email);
+
+    istoken = users.find(
+        ({ resetPasswordToken }) => resetPasswordToken === req.body.token
+    );
+
+    // if (d < Dbuser.resetPasswordExpires) {
+    if (Dbuser) {
+        if (istoken) {
+            Dbuser.salt = crypto.randomBytes(64).toString("hex");
+            Dbuser.hash = crypto
+                .pbkdf2Sync(req.body.newpassword, Dbuser.salt, 10000, 256, "sha512")
+                .toString("base64");
+
+            res.json({
+                sucess: true,
+                message: "password changed",
+            });
+        } else {
+            res.json({
+                sucess: false,
+                status: "failed",
+                message: "token not found",
+            });
+        }
+    } else {
+        res.json({
+            sucess: false,
+            status: "failed",
+            message: "token expired found",
+        });
+    }
+});
+
+app.use(auth);
 
 app.get("/refreshtoken", async(req, res) => {
     //  const info = req.header.Authorization;
