@@ -6,7 +6,7 @@ const jsonwebtoken = require("jsonwebtoken");
 app.use(express.json());
 app.use(cors());
 const auth = require("./middleware/auth");
-
+const config = require("./config");
 const users = [{
         id: 1,
         image: "https://nanoguard.in/wp-content/uploads/2019/09/pic.jpg",
@@ -42,7 +42,7 @@ const users = [{
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWQiOjMsImltYWdlIjoiaHR0cHM6Ly9uYW5vZ3VhcmQuaW4vd3AtY29udGVudC91cGxvYWRzLzIwMTkvMDkvcGljLmpwZyIsImZpcnN0TmFtZSI6InRlc3QiLCJsYXN0TmFtZSI6InRlc3QiLCJpYXQiOjE2MjA3NDU2MDgsImV4cCI6MTYyMDgzMjAwOH0.tnxgGEWpSCyeb8EIu_wFsJkPEsW5G4D6bhymhR8q3C8",
     },
 ];
-
+const tokenList = [];
 app.get("/", async(req, res) => {
     res.send({
         sucess: true,
@@ -55,6 +55,7 @@ app.get("/users", async(req, res) => {
         sucess: true,
         status: "ok",
         users: users,
+        tokenList,
     });
 });
 
@@ -149,18 +150,29 @@ app.post("/login", async(req, res) => {
                 firstName: Dbuser.firstName,
                 lastName: Dbuser.lastName,
             };
-            const token = jsonwebtoken.sign(
+            const token = jsonwebtoken.sign(_payload, config.secret, {
+                expiresIn: config.tokenLife,
+            });
+            const refreshtoken = jsonwebtoken.sign(
                 _payload,
-                "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING", { expiresIn: "1d" }
+                config.refreshTokenSecret, { expiresIn: config.refreshTokenLife }
             );
 
             Dbuser.token = token;
 
+            const tokenAndrefreshtokenCopy = {
+                status: "Logged in",
+                token: token,
+                refreshtoken: refreshtoken,
+            };
+
+            tokenList.push(tokenAndrefreshtokenCopy);
             res.send({
-                sucess: false,
-                status: "failed",
+                sucess: true,
+                status: "ok",
                 message: "sucess",
                 token: token,
+                refreshtoken: refreshtoken,
                 user: _payload,
             });
         } else {
@@ -179,25 +191,107 @@ app.post("/login", async(req, res) => {
     }
 });
 
+// app.use(auth);
+
+app.get("/refreshtoken", async(req, res) => {
+    //  const info = req.header.Authorization;
+    const refreshtoken = extractrefreshtoken(req);
+
+    const token = extractToken(req);
+    const chcktokn = extractToken(req);
+    //   console.log(token, '////', refreshtoken, '//////////')
+
+    // res.send(tokenList)
+
+    const checkingtoken = checkAvailabilityrefreshtoen(tokenList, refreshtoken);
+
+    console.log(checkingtoken, "checkingtoken");
+    if (token && checkingtoken) {
+        //  console.log("())))))))))))))))");
+        const decoded = jsonwebtoken.verify(chcktokn, config.secret);
+
+        console.log(decoded.email, "decoded.email");
+
+        var userdata = users.some((arrVal) => {
+            arrVal.email === decoded.email;
+        });
+
+        console.log(userdata, "[[userdata]]");
+        const _payload = {
+            email: decoded.email,
+            id: decoded.id,
+            image: decoded.image,
+
+            firstName: decoded.firstName,
+            lastName: decoded.lastName,
+        };
+
+        console.log(userdata, "userdatauserdatauserdatauserdatauserdata");
+
+        const token = jsonwebtoken.sign(_payload, config.secret, {
+            expiresIn: config.tokenLife,
+        });
+        const refreshtoken = jsonwebtoken.sign(
+            _payload,
+            config.refreshTokenSecret, { expiresIn: config.refreshTokenLife }
+        );
+
+        // tokenList[tokenAndrefreshtokenCopy.refreshtoken].token = token;
+
+        const tokenAndrefreshtokenCopy = {
+            status: "Logged in",
+            token: token,
+            refreshtoken: refreshtoken,
+        };
+
+        tokenList.push(tokenAndrefreshtokenCopy);
+        res.send({
+            sucess: true,
+            status: "ok",
+            message: "sucess",
+            token: token,
+            refreshtoken: refreshtoken,
+            userdata,
+        });
+    } else {
+        res.send({
+            sucess: false,
+            status: "failed",
+            message: "Invalid request",
+        });
+    }
+});
+
 app.get("/me", async(req, res) => {
     var token = extractToken(req);
     console.log(token);
 
     const decoded = jsonwebtoken.verify(
         token,
-        "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
+        config.secret,
+        function(err, decoded) {
+            if (err) {
+                res.send({
+                    err,
+                });
+            } else {
+                const decodeddata = jsonwebtoken.verify(token, config.secret);
+                if (decodeddata) {
+                    const me = decodeddata;
+
+                    const Dbuser = users.find(({ email }) => email === decodeddata.email);
+
+                    res.send({
+                        sucess: true,
+                        status: "ok",
+                        message: "user data",
+                        profile: me,
+                        token: token,
+                    });
+                }
+            }
+        }
     );
-    const me = decoded;
-
-    const Dbuser = users.find(({ email }) => email === decoded.email);
-
-    res.send({
-        sucess: false,
-        status: "failed",
-        message: "incorrect password",
-        profile: me,
-        token: token,
-    });
 });
 
 app.get("/authenticate", auth, async(req, res) => {
@@ -217,10 +311,7 @@ app.get("/authenticate", auth, async(req, res) => {
         const token = extractToken(req);
         console.log(token);
 
-        var decoded = jsonwebtoken.verify(
-            token,
-            "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
-        );
+        var decoded = jsonwebtoken.verify(token, config.secret);
         //  var decoded = jwt.verify(req.headers.token)
 
         if (decoded) {
@@ -244,6 +335,10 @@ function checkAvailability(arr, val) {
     return arr.some((arrVal) => arrVal.email === val);
 }
 
+function checkAvailabilityrefreshtoen(arr, val) {
+    return arr.some((arrVal) => arrVal.refreshtoken === val);
+}
+
 function extractToken(req) {
     if (
         req.headers.authorization &&
@@ -254,6 +349,15 @@ function extractToken(req) {
         return req.query.token || req.headers.token;
     }
     return null;
+}
+
+function extractrefreshtoken(req) {
+    // console.log(req.headers.refreshtoken, '++++++++++')
+    if (req.headers.refreshtoken) {
+        return req.headers.refreshtoken;
+    } else {
+        return null;
+    }
 }
 
 app.listen(3002, () => console.log("Server running on PORT 3002"));

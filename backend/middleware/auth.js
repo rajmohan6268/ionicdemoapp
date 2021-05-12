@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const config = require('./../config.json')
 
 module.exports = function(req, res, next) {
 
@@ -14,7 +15,7 @@ module.exports = function(req, res, next) {
 
 
     const token = extractToken(req)
-    console.log(token)
+        // console.log(token)
 
     //   const token = req.header("token");
 
@@ -24,7 +25,7 @@ module.exports = function(req, res, next) {
     /* check token validity */
 
     try {
-        const decoded = jwt.verify(token, "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING");
+        const decoded = jwt.verify(token, config.secret);
         req.user = decoded.user;
 
         //  console.log(decoded)
