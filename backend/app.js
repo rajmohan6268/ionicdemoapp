@@ -74,13 +74,14 @@ app.get("/users/:id", async(req, res) => {
 });
 
 app.post("/signup", async(req, res) => {
-    var _user = req.body;
+    var _user = req.body.user;
     console.log(_user);
 
     id = users.length + 1;
     var tempUser = {
         ..._user,
         id: id,
+        image: "https://nanoguard.in/wp-content/uploads/2019/09/pic.jpg",
     };
 
     if (
@@ -101,7 +102,7 @@ app.post("/signup", async(req, res) => {
         } else {
             tempUser.salt = crypto.randomBytes(64).toString("hex");
             tempUser.hash = crypto
-                .pbkdf2Sync(req.body.password, tempUser.salt, 10000, 256, "sha512")
+                .pbkdf2Sync(req.body.user.password, tempUser.salt, 10000, 256, "sha512")
                 .toString("base64");
 
             users.push(tempUser);
@@ -134,11 +135,13 @@ app.post("/signup", async(req, res) => {
 });
 
 app.post("/login", async(req, res) => {
-    const Dbuser = users.find(({ email }) => email === req.body.email);
+
+    console.log(req.body, 'atempting login')
+    const Dbuser = users.find(({ email }) => email === req.body.user.email);
 
     if (Dbuser) {
         const hashedPassword = crypto
-            .pbkdf2Sync(req.body.password, Dbuser.salt, 10000, 256, "sha512")
+            .pbkdf2Sync(req.body.user.password, Dbuser.salt, 10000, 256, "sha512")
             .toString("base64");
 
         if (hashedPassword === Dbuser.hash) {

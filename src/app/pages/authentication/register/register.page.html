@@ -1,0 +1,44 @@
+<ion-content>
+    <h1 text-center>Sign Up</h1>
+    <form [formGroup]="signUpForm" (ngSubmit)="submitSignupForm()">
+        <div formGroupName="user">
+
+
+            <ion-item>
+                <ion-label>username*</ion-label>
+                <ion-input type="text" autocapitalize="on" formControlName="username" ngDefaultControl></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Email*</ion-label>
+                <ion-input type="email" formControlName="email" ngDefaultControl></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>firstName*</ion-label>
+                <ion-input type="text" autocapitalize="on" formControlName="firstName" ngDefaultControl></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>lastName*</ion-label>
+                <ion-input type="email" formControlName="lastName" ngDefaultControl></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Password*</ion-label>
+                <ion-input type="password" formControlName="password" ngDefaultControl></ion-input>
+            </ion-item>
+
+            <!-- <ion-item>
+        <ion-label>Confirm Password</ion-label>
+        <ion-input type="password" formControlName="password_confirmation" ngDefaultControl></ion-input>
+      </ion-item> -->
+        </div>
+        <ion-grid>
+            <ion-button expand="block" full type="submit" [disabled]="!signUpForm.valid">
+                <strong>Sign up</strong>
+            </ion-button>
+            <ion-button expand="block" [routerLink]="['/login']">
+                <strong>Alreday a User? Log in here</strong>
+            </ion-button>
+        </ion-grid>
+    </form>
+</ion-content>

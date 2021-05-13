@@ -1,5 +1,7 @@
 {
   "name": "Demo_Property_deal",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
