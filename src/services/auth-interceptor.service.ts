@@ -58,9 +58,9 @@ export class AuthInterceptorService implements HttpInterceptor {
   async showMessage(message) {
     const toast = await this.toast.create({
       message: message,
-      showCloseButton: true,
+      // showCloseButton: true,
       position: 'bottom',
-      closeButtonText: 'Close',
+      // closeButtonText: 'Close',
       duration: 5000
     });
     toast.present();
