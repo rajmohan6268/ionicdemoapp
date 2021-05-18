@@ -12,7 +12,7 @@ import { AlertService } from 'src/app/services/alert.service';
 })
 export class LoginPage implements OnInit {
   signInForm: FormGroup;
-
+  userdata:any = null;
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -20,23 +20,39 @@ export class LoginPage implements OnInit {
     private authenticationService: AuthenticationService,
     private alertService: AlertService) {
     this.signInForm = this.formBuilder.group({
-      user: this.formBuilder.group({
+     
         email: ['', Validators.compose([Validators.required, Validators.email])],
         password: ['', Validators.compose([Validators.required, Validators.minLength(2)])]
-      }),
-    });
+      })
+    
   }
 
-  ngOnInit() {
+  ngOnInit() {  
 
 
   }
-
+  ionViewDidEnter() {
+    this.userdata = JSON.parse(localStorage.getItem('userdata'))
+    console.log("userdata",this.userdata)
+    if(this.userdata != null){
+      this.router.navigate(['/app/layout/tab1'])
+    }
+  }
   submitSignInForm() {
-    this.apiService.signIn(this.signInForm.value).subscribe(response => {
+    let obj = {
+      user:{
+    
+        email: this.signInForm.value.email, password:this.signInForm.value.password
+      }
+    }
+    this.apiService.signIn(obj).subscribe(response => {
       console.log('response is: ', response);
       if (response.sucess) {
-        this.authenticationService.login(response);
+      //  this.authenticationService.login(response);
+      localStorage.setItem("userdata",JSON.stringify(response))
+      localStorage.setItem("token",response.token)
+        this.alertService.alert('Login', "User Login Success");
+        this.router.navigate(['/app'])
       } else {
         this.alertService.alert('Warning', response.message);
       }

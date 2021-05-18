@@ -1,34 +1,42 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <ion-title>Sign up</ion-title>
+    </ion-toolbar>
+  </ion-header>
 <ion-content>
-    <h1 text-center>Sign Up</h1>
+  
     <form [formGroup]="signUpForm" (ngSubmit)="submitSignupForm()">
         <div formGroupName="user">
 
 
             <ion-item>
-                <ion-label>username*</ion-label>
+                <ion-label position="floating" >username*</ion-label>
                 <ion-input type="text" autocapitalize="on" formControlName="username" ngDefaultControl></ion-input>
             </ion-item>
 
             <ion-item>
-                <ion-label>Email*</ion-label>
+                <ion-label position="floating" >Email*</ion-label>
                 <ion-input type="email" formControlName="email" ngDefaultControl></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>firstName*</ion-label>
+                <ion-label position="floating" >firstName*</ion-label>
                 <ion-input type="text" autocapitalize="on" formControlName="firstName" ngDefaultControl></ion-input>
             </ion-item>
 
             <ion-item>
-                <ion-label>lastName*</ion-label>
+                <ion-label position="floating" >lastName*</ion-label>
                 <ion-input type="email" formControlName="lastName" ngDefaultControl></ion-input>
             </ion-item>
             <ion-item>
-                <ion-label>Password*</ion-label>
+                <ion-label position="floating" >Password*</ion-label>
                 <ion-input type="password" formControlName="password" ngDefaultControl></ion-input>
             </ion-item>
 
             <!-- <ion-item>
-        <ion-label>Confirm Password</ion-label>
+        <ion-label position="floating" >Confirm Password</ion-label>
         <ion-input type="password" formControlName="password_confirmation" ngDefaultControl></ion-input>
       </ion-item> -->
         </div>
@@ -36,7 +44,7 @@
             <ion-button expand="block" full type="submit" [disabled]="!signUpForm.valid">
                 <strong>Sign up</strong>
             </ion-button>
-            <ion-button expand="block" [routerLink]="['/login']">
+            <ion-button expand="block" [routerLink]="['/']">
                 <strong>Alreday a User? Log in here</strong>
             </ion-button>
         </ion-grid>

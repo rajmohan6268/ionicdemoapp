@@ -1,12 +1,12 @@
-<ion-header>
+<!-- <ion-header>
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <ion-title>profile</ion-title>
     </ion-toolbar>
-</ion-header>
-<ion-content>
+</ion-header> -->
+<!-- 
     <h1 text-center>Ionic</h1>
     <p text-center>Existing user? Sign in here.</p>
 
@@ -32,5 +32,40 @@
                 <a [routerLink]="['/register']">Or new user? Create an account</a>
             </p>
         </ion-grid>
-    </form>
-</ion-content>
+    </form> -->
+
+<ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+     
+      </ion-buttons>
+      <ion-title>Login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+     
+        <form style="    margin-top: 100px;" [formGroup]="signInForm" (ngSubmit)="submitSignInForm()" >
+            <ion-item lines="full">
+              <ion-label position="floating">Email</ion-label>
+              <ion-input formControlName="email"  type="email" required></ion-input>
+            </ion-item>
+        
+            <ion-item lines="full">
+              <ion-label position="floating">Password</ion-label>
+              <ion-input formControlName="password" type="password" required></ion-input>
+            </ion-item>
+        
+            <ion-row>
+              <ion-col>
+                <ion-button type="submit" [disabled]="!signInForm.valid"   expand="block">Sign In</ion-button>
+                <a [routerLink]="['/forgot-password']" class="small-text">Forgot Password?</a>
+              </ion-col>
+              <ion-col size="12">
+                <ion-button [routerLink]="['/register']" routerLinkActive="router-link-active"  color="danger" expand="block">Sign up</ion-button>
+              </ion-col>
+            </ion-row>
+          </form>
+          
+ 
+  </ion-content>

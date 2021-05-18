@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -6,7 +7,14 @@ import { Component } from '@angular/core';
   styleUrls: ['tabs.page.scss']
 })
 export class TabsPage {
+  userdata:any = null;
+  constructor(private router:Router) {}
 
-  constructor() {}
-
+  ionViewDidEnter() {
+    this.userdata = JSON.parse(localStorage.getItem('userdata'))
+    console.log("userdata",this.userdata)
+    if(this.userdata == null){
+      this.router.navigate(['/'])
+    }
+  }
 }

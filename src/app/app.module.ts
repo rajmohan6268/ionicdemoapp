@@ -24,11 +24,13 @@ import { AppComponent } from './app.component'
     ProfilesPageModule,
   ],
   providers: [    StatusBar,
-    SplashScreen,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptorService,
-      multi: true
-    },],
+    SplashScreen,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    //  {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: AuthInterceptorService,
+    //   multi: true
+    // },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     private authenticationService: AuthenticationService
   ) {
     this.initializeApp();
-    console.log(this.menuItems);
+  //  console.log(this.menuItems);
   }
   ngOnInit(): void {
 

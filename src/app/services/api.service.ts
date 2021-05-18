@@ -22,10 +22,7 @@ export class ApiService {
     console.log('Sign In User: ', user);
     return this.http
       .post(`${this.URL}login`, user)
-      .pipe(
-        (map(response => response)),
-        catchError((error: any) => of(error))
-      );
+      
   }
 
   signUp(user): Observable<any> {

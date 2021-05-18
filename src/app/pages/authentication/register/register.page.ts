@@ -46,7 +46,9 @@ export class RegisterPage implements OnInit {
         this.apiService.signIn(user).subscribe(response => {
           console.log('response is: ', response);
           if (response.sucess) {
-            this.authenticationService.login(response);
+           // this.authenticationService.login(response);
+           this.alertService.alert('User Creation Success',"User successfully created !");
+              this.router.navigate(['/'])    
           } else {
             this.alertService.alert('Warning', response.message);
           }
