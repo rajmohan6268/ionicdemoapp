@@ -38,7 +38,7 @@ const users = [{
         lastName: "test",
         id: 3,
         salt: "61dbe5f855a2faf9954122149ce34695538aa5fd657e36b72cfd599bc96d0b256fd7689c2baf38295f7a8b8a511f0512c5f021e6fdf4e63dc6eb9af04e7c45c2",
-        hash: "WtXFaTcmkuHCIxMJ2Z/f0IEylWx9a2BSCwETzNs2aeAvz+WB7SaSCr/zlf8ssO2jKwh50XAS7AcBKs4SjosHQttytLw+ck6igbqbZsoQnpMSffhH4kkyMW/s8kLADupo8B7AjPv0iYXlInjBj5P53ytYMxeLOCMNCImmhf1Lk7qB8PeSgK3TthbOXbJZYi6VCwZKOiBXReHqaPq8m4Co+mxP4s5+mdlhc0SaMxUCEHVc1sPrK+h0y7mRGn4SgM5kovjP8qeRLu7T5lniwIIBBDeS74/ljd6pq7xC3kexDx5r5i3w4Rkqn3PfgtuFpmLYyic+UjlLvX0Q0Qs0S8g8LA==",
+        hash: "W,tXFaTcmkuHCIxMJ2Z/f0IEylWx9a2BSCwETzNs2aeAvz+WB7SaSCr/zlf8ssO2jKwh50XAS7AcBKs4SjosHQttytLw+ck6igbqbZsoQnpMSffhH4kkyMW/s8kLADupo8B7AjPv0iYXlInjBj5P53ytYMxeLOCMNCImmhf1Lk7qB8PeSgK3TthbOXbJZYi6VCwZKOiBXReHqaPq8m4Co+mxP4s5+mdlhc0SaMxUCEHVc1sPrK+h0y7mRGn4SgM5kovjP8qeRLu7T5lniwIIBBDeS74/ljd6pq7xC3kexDx5r5i3w4Rkqn3PfgtuFpmLYyic+UjlLvX0Q0Qs0S8g8LA==",
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiaWQiOjMsImltYWdlIjoiaHR0cHM6Ly9uYW5vZ3VhcmQuaW4vd3AtY29udGVudC91cGxvYWRzLzIwMTkvMDkvcGljLmpwZyIsImZpcnN0TmFtZSI6InRlc3QiLCJsYXN0TmFtZSI6InRlc3QiLCJpYXQiOjE2MjA3NDU2MDgsImV4cCI6MTYyMDgzMjAwOH0.tnxgGEWpSCyeb8EIu_wFsJkPEsW5G4D6bhymhR8q3C8",
     },
 ];
@@ -100,6 +100,8 @@ app.post("/signup", async(req, res) => {
                 message: `${_user.email} already exist `,
             });
         } else {
+
+
             tempUser.salt = crypto.randomBytes(64).toString("hex");
             tempUser.hash = crypto
                 .pbkdf2Sync(req.body.user.password, tempUser.salt, 10000, 256, "sha512")
@@ -124,6 +126,9 @@ app.post("/signup", async(req, res) => {
                 message: "user created",
                 user,
             });
+
+
+
         }
     } else {
         res.send({
@@ -134,12 +139,18 @@ app.post("/signup", async(req, res) => {
     }
 });
 
+
+
+
 app.post("/login", async(req, res) => {
 
     console.log(req.body, 'atempting login')
     const Dbuser = users.find(({ email }) => email === req.body.user.email);
 
     if (Dbuser) {
+
+
+
         const hashedPassword = crypto
             .pbkdf2Sync(req.body.user.password, Dbuser.salt, 10000, 256, "sha512")
             .toString("base64");
@@ -185,6 +196,10 @@ app.post("/login", async(req, res) => {
                 message: "incorrect password",
             });
         }
+
+
+
+
     } else {
         res.send({
             sucess: false,
@@ -258,6 +273,9 @@ app.post("/resetpassword", async(req, res) => {
     }
 });
 
+
+
+
 app.use(auth);
 
 app.get("/refreshtoken", async(req, res) => {
@@ -275,6 +293,8 @@ app.get("/refreshtoken", async(req, res) => {
     console.log(checkingtoken, "checkingtoken");
     if (token && checkingtoken) {
         //  console.log("())))))))))))))))");
+
+
         const decoded = jsonwebtoken.verify(chcktokn, config.secret);
 
         console.log(decoded.email, "decoded.email");
@@ -320,6 +340,9 @@ app.get("/refreshtoken", async(req, res) => {
             refreshtoken: refreshtoken,
             userdata,
         });
+
+
+
     } else {
         res.send({
             sucess: false,
@@ -419,7 +442,6 @@ function extractToken(req) {
 }
 
 function extractrefreshtoken(req) {
-    // console.log(req.headers.refreshtoken, '++++++++++')
     if (req.headers.refreshtoken) {
         return req.headers.refreshtoken;
     } else {
