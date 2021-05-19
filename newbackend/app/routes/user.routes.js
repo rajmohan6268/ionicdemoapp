@@ -16,11 +16,13 @@ module.exports = (app) => {
 
     router.post("/resetpassword", auth.resetpassword);
 
+    router.get("/getAllUsers", user.getuser);
+    router.get("/user/:id", user.getById);
+
     app.use("/api/users", router);
 
 
-    router.get("/getAllUsers", user.getuser);
-    router.get("/user/:id", user.getById);
+
 
 
 };
