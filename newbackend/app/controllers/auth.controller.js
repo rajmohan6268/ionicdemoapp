@@ -191,6 +191,8 @@ exports.forGetPassword = async(req, res) => {
             .randomBytes(60)
             .toString("hex"));
         Dbuser.resetPasswordExpires = Date.now() + 3600000; //expires in an hour
+        //  Dbuser.resetPasswordExpires = Date.now()
+
         Dbuser.passwordResetToken = token
 
         Dbuser.save().then(() => {
@@ -213,6 +215,74 @@ exports.forGetPassword = async(req, res) => {
             sucess: false,
             status: "failed",
             message: "user not found",
+        });
+    }
+
+}
+
+exports.resetpassword = async(req, res) => {
+    console.log(req.body);
+
+    var d = Date.now();
+    console.log(d);
+    const Dbuser = await User.findOne({ $and: [{ email: req.body.email }, { passwordResetToken: req.body.passwordResetToken }] })
+
+    // istoken = users.find(
+    //     ({ resetPasswordToken }) => resetPasswordToken === req.body.token
+    // );
+
+
+    console.log(Dbuser, 'dbuser')
+
+    if (Dbuser) {
+
+        if (d < Dbuser.resetPasswordExpires) {
+
+            Dbuser.salt = crypto.randomBytes(64).toString("hex");
+            Dbuser.hash = crypto
+                .pbkdf2Sync(req.body.newpassword, Dbuser.salt, 10000, 256, "sha512")
+                .toString("base64");
+
+
+            Dbuser.resetPasswordExpires = null
+            Dbuser.passwordResetToken = null
+
+            Dbuser.save().then(() => {
+
+
+
+
+                res.json({
+                    sucess: true,
+                    message: "password changed",
+                });
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || "Some error occurred while gerating forget password token."
+                });
+            })
+
+
+        } else {
+            res.json({
+                sucess: false,
+                status: "failed",
+                message: "time out token expired",
+            });
+
+
+
+        }
+
+
+
+
+
+    } else {
+        res.json({
+            sucess: false,
+            status: "failed",
+            message: "token expired or notfound",
         });
     }
 

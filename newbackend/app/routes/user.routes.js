@@ -14,7 +14,7 @@ module.exports = (app) => {
 
     router.get("/forGetPassword", auth.forGetPassword);
 
-    router.post("/resetpassword");
+    router.post("/resetpassword", auth.resetpassword);
 
     app.use("/api/users", router);
 
