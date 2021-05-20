@@ -4,11 +4,9 @@ const cors = require("cors");
 
 const app = express();
 
-// var corsOptions = {
-//     origin: "http://localhost:3000"
-// };
 
-// app.use(cors(corsOptions));
+
+app.use(cors());
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -36,6 +34,8 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/user.routes.js")(app);
+require("./app/routes/properties.routes.js")(app);
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3002;

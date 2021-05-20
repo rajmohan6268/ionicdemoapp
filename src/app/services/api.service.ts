@@ -13,7 +13,7 @@ export class ApiService {
   // api server
  // public URL = 'http://0.0.0.0:3000/api/v1/';
 
-  public URL = 'http://0.0.0.0:3002/';
+  public URL = 'http://localhost:3002/api/users/';
   constructor(public http: HttpClient, private authenticatinService: AuthenticationService) {
   }
 
@@ -22,7 +22,7 @@ export class ApiService {
     console.log('Sign In User: ', user);
     return this.http
       .post(`${this.URL}login`, user)
-      
+
   }
 
   signUp(user): Observable<any> {
